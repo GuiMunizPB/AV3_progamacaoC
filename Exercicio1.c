@@ -8,9 +8,9 @@
 
 int main()
 {
-    FILE *arq;
-    arq = fopen("funcionarios.dat", "w+");
-    if(arq == NULL)
+    FILE *arq1, *arq2;
+    arq1 = fopen("funcionarios.dat", "w+");
+    if(arq1 == NULL)
     {
         printf("Erro na abertura do arquivo");
         exit(1);
@@ -109,22 +109,63 @@ int main()
     funcionario_12.proximo = 3;
 
     // escrevendo os dados no arquivo
-    fprintf(arq, "%s %d %d %d %d", funcionario_0.nome, funcionario_0.numRegistro, funcionario_0.nivelSalarial, funcionario_0.departamento, funcionario_0.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_1.nome, funcionario_1.numRegistro, funcionario_1.nivelSalarial, funcionario_1.departamento, funcionario_1.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_2.nome, funcionario_2.numRegistro, funcionario_2.nivelSalarial, funcionario_2.departamento, funcionario_2.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_3.nome, funcionario_3.numRegistro, funcionario_3.nivelSalarial, funcionario_3.departamento, funcionario_3.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_4.nome, funcionario_4.numRegistro, funcionario_4.nivelSalarial, funcionario_4.departamento, funcionario_4.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_5.nome, funcionario_5.numRegistro, funcionario_5.nivelSalarial, funcionario_5.departamento, funcionario_5.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_6.nome, funcionario_6.numRegistro, funcionario_6.nivelSalarial, funcionario_6.departamento, funcionario_6.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_7.nome, funcionario_7.numRegistro, funcionario_7.nivelSalarial, funcionario_7.departamento, funcionario_7.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_8.nome, funcionario_8.numRegistro, funcionario_8.nivelSalarial, funcionario_8.departamento, funcionario_8.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_9.nome, funcionario_9.numRegistro, funcionario_9.nivelSalarial, funcionario_9.departamento, funcionario_9.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_10.nome, funcionario_10.numRegistro, funcionario_10.nivelSalarial, funcionario_10.departamento, funcionario_10.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_11.nome, funcionario_11.numRegistro, funcionario_11.nivelSalarial, funcionario_11.departamento, funcionario_11.proximo);
-    fprintf(arq, "\n%s %d %d %d %d", funcionario_12.nome, funcionario_12.numRegistro, funcionario_12.nivelSalarial, funcionario_12.departamento, funcionario_12.proximo);
+    fprintf(arq1, "%s %d %d %d %d", funcionario_0.nome, funcionario_0.numRegistro, funcionario_0.nivelSalarial, funcionario_0.departamento, funcionario_0.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_1.nome, funcionario_1.numRegistro, funcionario_1.nivelSalarial, funcionario_1.departamento, funcionario_1.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_2.nome, funcionario_2.numRegistro, funcionario_2.nivelSalarial, funcionario_2.departamento, funcionario_2.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_3.nome, funcionario_3.numRegistro, funcionario_3.nivelSalarial, funcionario_3.departamento, funcionario_3.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_4.nome, funcionario_4.numRegistro, funcionario_4.nivelSalarial, funcionario_4.departamento, funcionario_4.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_5.nome, funcionario_5.numRegistro, funcionario_5.nivelSalarial, funcionario_5.departamento, funcionario_5.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_6.nome, funcionario_6.numRegistro, funcionario_6.nivelSalarial, funcionario_6.departamento, funcionario_6.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_7.nome, funcionario_7.numRegistro, funcionario_7.nivelSalarial, funcionario_7.departamento, funcionario_7.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_8.nome, funcionario_8.numRegistro, funcionario_8.nivelSalarial, funcionario_8.departamento, funcionario_8.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_9.nome, funcionario_9.numRegistro, funcionario_9.nivelSalarial, funcionario_9.departamento, funcionario_9.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_10.nome, funcionario_10.numRegistro, funcionario_10.nivelSalarial, funcionario_10.departamento, funcionario_10.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_11.nome, funcionario_11.numRegistro, funcionario_11.nivelSalarial, funcionario_11.departamento, funcionario_11.proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario_12.nome, funcionario_12.numRegistro, funcionario_12.nivelSalarial, funcionario_12.departamento, funcionario_12.proximo);
 
-    fclose(arq);
+    fclose(arq1);
 
+    arq2 = fopen("departamentos.dat", "w+");
+    if (arq2 == NULL)
+    {
+        printf("Erro ao abrir o arquivo");
+        exit(1);
+    }
 
+    //struct para os departamentos
+
+    typedef struct Departamento
+    {;
+        int codDepto;
+        char nomeDepto[30];
+        int inicio;
+    } Departamento;
+
+    Departamento departamento_0, departamento_1, departamento_2, departamento_3;
+
+    //preenchendo dados dos departamentos
+    departamento_0.codDepto = 1;
+    strcpy(departamento_0.nomeDepto, "Vendas");
+    departamento_0.inicio = 0;
+
+    departamento_1.codDepto = 2;
+    strcpy(departamento_1.nomeDepto, "Contabilidade");
+    departamento_1.inicio = 8;
+
+    departamento_2.codDepto = 3;
+    strcpy(departamento_2.nomeDepto, "Estoque");
+    departamento_2.inicio = 7;
+
+    departamento_3.codDepto = 4;
+    strcpy(departamento_3.nomeDepto, "Entrega");
+    departamento_3.inicio = 2;
+
+    //escrevendo os dados no arquivo
+    fprintf(arq2, "%d %s %d", departamento_0.codDepto, departamento_0.nomeDepto, departamento_0.inicio);
+    fprintf(arq2, "\n%d %s %d", departamento_1.codDepto, departamento_1.nomeDepto, departamento_1.inicio);
+    fprintf(arq2, "\n%d %s %d", departamento_2.codDepto, departamento_2.nomeDepto, departamento_2.inicio);
+    fprintf(arq2, "\n%d %s %d", departamento_3.codDepto, departamento_3.nomeDepto, departamento_3.inicio);
+
+    fclose(arq2);
 
 }
