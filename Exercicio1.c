@@ -4,6 +4,24 @@
 #include <strings.h>
 #include <string.h>
 
+ // struct de registro com funcionarios, numero de registro, nivel salarial e departamento
+    typedef struct
+    {
+        char nome[30];
+        int numRegistro;
+        int nivelSalarial;
+        int departamento;
+        int proximo;
+    } Funcionario;
+
+//struct para os departamentos
+
+    typedef struct Departamento
+    {
+        int codDepto;
+        char nomeDepto[30];
+        int inicio;
+    } Departamento;
 
 
 int main()
@@ -15,15 +33,6 @@ int main()
         printf("Erro na abertura do arquivo");
         exit(1);
     }
-    // struct de registro com funcionarios, numero de registro, nivel salarial e departamento
-    typedef struct
-    {
-        char nome[30];
-        int numRegistro;
-        int nivelSalarial;
-        int departamento;
-        int proximo;
-    } Funcionario;
     
     Funcionario funcionario_0, funcionario_1, funcionario_2, funcionario_3, 
     funcionario_4, funcionario_5, funcionario_6, funcionario_7, funcionario_8, 
@@ -132,15 +141,6 @@ int main()
         exit(1);
     }
 
-    //struct para os departamentos
-
-    typedef struct Departamento
-    {;
-        int codDepto;
-        char nomeDepto[30];
-        int inicio;
-    } Departamento;
-
     Departamento departamento_0, departamento_1, departamento_2, departamento_3;
 
     //preenchendo dados dos departamentos
@@ -168,4 +168,5 @@ int main()
 
     fclose(arq2);
 
+    
 }
