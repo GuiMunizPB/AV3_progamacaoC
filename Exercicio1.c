@@ -1,10 +1,7 @@
-// Grupo: Guilherme Muniz, Luana de Mero, Camila Vasconcelos, Ravi de Almeida.
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
-
 
 // struct de registro com funcionarios, numero de registro, nivel salarial e
 // departamento
@@ -34,7 +31,7 @@ void admitirFuncionario(int *j) {
     exit(1);
   }
 
-  int i, a= *j;
+  int i, a = *j;
 
   printf("Digite o nome do funcionario: ");
   scanf("%s", funcionario[*j].nome);
@@ -63,17 +60,17 @@ void admitirFuncionario(int *j) {
   fprintf(arq1, "%s %d %d %d %d\n", funcionario[*j].nome,
           funcionario[*j].numRegistro, funcionario[*j].nivelSalarial,
           funcionario[*j].departamento, funcionario[*j].proximo);
-  
+
   a++;
   *j = a;
 
   system("clear");
-  
+
   fclose(arq1);
 }
 
 // funcao que consulta individualmente um funcionario
-void consultarFuncionario(*j) {
+void consultarFuncionario(int *j) {
   FILE *arq1;
   arq1 = fopen("funcionarios.dat", "r");
   if (arq1 == NULL) {
@@ -89,7 +86,8 @@ void consultarFuncionario(*j) {
   do {
     for (i = 0; i < *j; i++) {
       if (numRegistro == funcionario[i].numRegistro) {
-        printf("Nome: %s\nNumero de registro: %d\nNivel salarial: "
+        printf("-=-=-=-=-=-=-=-\nNome: %s\nNumero de registro: %d\nNivel "
+               "salarial: "
                "%d\nDepartamento: %d\nProximo: %d\n",
                funcionario[i].nome, funcionario[i].numRegistro,
                funcionario[i].nivelSalarial, funcionario[i].departamento,
@@ -102,11 +100,150 @@ void consultarFuncionario(*j) {
       scanf("%d", &numRegistro);
     }
   } while (q == 0);
-  
+
   sleep(5);
   system("clear");
 
   fclose(arq1);
+}
+
+// funcao que consulta todos os funcionarios de um departamento
+void consultarDepartamento(int *j) {
+  FILE *arq1;
+  arq1 = fopen("funcionarios.dat", "r");
+  if (arq1 == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
+
+  int i, q = 0, departamento;
+
+  printf("Digite o departamento: ");
+  scanf("%d", &departamento);
+  // verificar se o departamento existe no arquivo
+  do {
+    for (i = 0; i < *j; i++) {
+      if (departamento == funcionario[i].departamento) {
+        printf("-=-=-=-=-=-=-=-\nNome: %s\nNumero de registro: %d\nNivel "
+               "salarial: "
+               "%d\nDepartamento: %d\nProximo: %d\n",
+               funcionario[i].nome, funcionario[i].numRegistro,
+               funcionario[i].nivelSalarial, funcionario[i].departamento,
+               funcionario[i].proximo);
+        q++;
+      }
+    }
+    if (q == 0) {
+      printf("Departamento nao encontrado, digite outro departamento: ");
+      scanf("%d", &departamento);
+    }
+  } while (q == 0);
+
+  sleep(20);
+  system("clear");
+
+  fclose(arq1);
+}
+
+// funcao que demite um funcionario
+void demitirFuncionario(int *j) {
+  FILE *arq1;
+  arq1 = fopen("funcionarios.dat", "r");
+  if (arq1 == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
+
+  int i, q = 0, numRegistro, a = *j;
+
+  printf("Digite o numero de registro do funcionario: ");
+  scanf("%d", &numRegistro);
+  // verificar se o numero do registro existe no arquivo
+  do {
+    for (i = 0; i < *j; i++) {
+      if (numRegistro == funcionario[i].numRegistro) {
+        strcpy(funcionario[i].nome, " ");
+        funcionario[i].numRegistro = 0;
+        funcionario[i].nivelSalarial = 0;
+        funcionario[i].departamento = 0;
+        funcionario[i].proximo = 0;
+        q++;
+      }
+    }
+    if (q == 0) {
+      printf("Numero de registro nao encontrado, digite outro numero: ");
+      scanf("%d", &numRegistro);
+    }
+  } while (q == 0);
+
+  // mudar os proximos do funcionario apos a demissao
+
+  // remover funcionario do arquivo
+  fprintf(arq1, "%s %d %d %d %d\n", funcionario[i].nome,
+          funcionario[i].numRegistro, funcionario[i].nivelSalarial,
+          funcionario[i].departamento, funcionario[i].proximo);
+
+  printf("Funcionario %d demitido com sucesso!\n", numRegistro);
+
+  a--;
+  *j = a;
+
+  sleep(5);
+  system("clear");
+
+  fclose(arq1);
+}
+
+// funcao que faz mudanca de departamento de um funcionario
+void mudarDepartamento(int *j) {
+  FILE *arq1, *arq2;
+  arq1 = fopen("funcionarios.dat", "r");
+  if (arq1 == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
+  arq2 = fopen("departamentos.dat", "w");
+  if (arq2 == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
+
+  int i, q = 0, numRegistro, dep;
+
+  printf("Digite o numero de registro do funcionario: ");
+  scanf("%d", &numRegistro);
+  // verificar se o numero do registro existe no arquivo
+  do {
+    for (i = 0; i < *j; i++) {
+      if (numRegistro == funcionario[i].numRegistro) {
+        printf("Digite o novo departamento: ");
+        scanf("%d", &dep);
+        // verificar se o funcionario é o início de seu departamento
+        if (departamento[i].inicio == i) {
+          departamento[i].inicio = funcionario[i].proximo;
+        }
+        funcionario[i].departamento = dep;
+        q++;
+      }
+    }
+    if (q == 0) {
+      printf("Numero de registro nao encontrado, digite outro numero: ");
+      scanf("%d", &numRegistro);
+    }
+  } while (q == 0);
+
+  // mudar os proximos do funcionario apos a mudanca de departamento ?????
+
+  // adicionando no arquivo
+  fprintf(arq1, "%d", funcionario[i].departamento);
+  fprintf(arq2, "%d", departamento[i].inicio);
+
+  printf("Funcionario %d mudou de departamento com sucesso!\n", numRegistro);
+  sleep(5);
+  system("clear");
+
+  fclose(arq1);
+  fclose(arq2);
 }
 
 int main() {
@@ -116,7 +253,7 @@ int main() {
     printf("Erro na abertura do arquivo");
     exit(1);
   }
-  int menu, j=13;
+  int menu, j = 13;
 
   // preenchendo os dados dos funcionarios
   strcpy(funcionario[0].nome, "Joao");
@@ -239,9 +376,10 @@ int main() {
   fclose(arq2);
 
   do {
-    printf("Escolha uma opção!\n0. Sair\n1. Admissão de funcionário\n2. "
-           "Demissão de funcionário\n3. Mudança de Departamento\n4. Consulta a "
-           "todos funcionários de um departamento\n5. Consulta Individual\n--> ");
+    printf(
+        "Escolha uma opção!\n0. Sair\n1. Admissão de funcionário\n2. "
+        "Demissão de funcionário\n3. Mudança de Departamento\n4. Consulta a "
+        "todos funcionários de um departamento\n5. Consulta Individual\n--> ");
     scanf("%d", &menu);
     switch (menu) {
     case 0:
@@ -250,13 +388,20 @@ int main() {
     case 1:
       admitirFuncionario(&j);
       break;
+    case 2:
+      demitirFuncionario(&j);
+      break;
+    case 3:
+      mudarDepartamento(&j);
+      break;
+    case 4:
+      consultarDepartamento(&j);
+      break;
     case 5:
       consultarFuncionario(&j);
       break;
     }
   } while (menu != 0);
-  
-  
 
   return 0;
 }
