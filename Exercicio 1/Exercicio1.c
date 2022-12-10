@@ -4,6 +4,8 @@
 #include <strings.h>
 #include <unistd.h>
 
+// Grupo : Guilherme Muniz, Luana de Mero, Camila Vasconcelos e Ravi de Almeida.
+
 // struct de registro com funcionarios, numero de registro, nivel salarial e
 // departamento
 typedef struct {
