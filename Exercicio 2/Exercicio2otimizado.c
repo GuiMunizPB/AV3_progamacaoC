@@ -12,14 +12,12 @@ typedef struct {
 Imagem imagem;
 
 // funcao que clareia a imagem
-void clarearImagem() {
+void clarearImagem(char *argv[]) {
   FILE *in;
   FILE *out1;
-  in = fopen("lena.ascii.pgm", "rt");
   out1 = fopen("out1.ascii.pgm", "wt");
   if (in == NULL || out1 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
-    return 1;
   }
 
   char line[512];
@@ -49,19 +47,56 @@ void clarearImagem() {
   fclose(out1);
 }
 
-// funcao que reduz o tamanho da imagem em blocos de 2x2 pixels e faz a media
-// dos pixels para gerar um novo pixel na imagem de saida (zoom) ??
+// funcao que reduz o tamanho da imagem em blocos de 2x2 pixels e faz a media dos pixels para gerar um novo pixel na imagem de saida (zoom) ??
+void zoomImagem(char *argv[]) {
+  FILE *in;
+  FILE *out2;
+  out2 = fopen("out2.ascii.pgm", "wt");
+  if (in == NULL || out2 == NULL) {
+    printf("Erro ao abrir o arquivo de entrada");
+  }
 
-// funcao que binariza a imagem transforma em preto ou branco a partir de um
-// limiar obtido pela media dos pixels da imagem
-void binarizarImagem() {
+  char line[512];
+  fscanf(in, "%[^\n]\n", line);
+  fprintf(out2, "%s\n", line);
+  fscanf(in, "%[^\n]\n", line);
+
+  fprintf(out2, "%d %d \n", imagem.linha / 2, imagem.coluna / 2);
+  fprintf(out2, "%d \n", imagem.max);
+
+  fscanf(in, "%[^\n]\n", line);
+  fscanf(in, "%[^\n]\n", line);
+
+  int i, j;
+  int matriz[imagem.linha][imagem.coluna];
+  for (i = 0; i < imagem.linha; i++) {
+    for (j = 0; j < imagem.coluna; j++) {
+      int pixel;
+      fscanf(in, "%d", &pixel);
+      matriz[i][j] = pixel;
+    }
+  }
+
+  for (i = 0; i < imagem.linha; i = i + 2) {
+    for (j = 0; j < imagem.coluna; j = j + 2) {
+      int pixel = (matriz[i][j] + matriz[i][j + 1] + matriz[i + 1][j] +
+                   matriz[i + 1][j + 1]) /
+                  4;
+      fprintf(out2, "%d ", pixel);
+    }
+  }
+
+  fclose(in);
+  fclose(out2);
+}
+
+// funcao que binariza a imagem transforma em preto ou branco a partir de um limiar obtido pela media dos pixels da imagem
+void binarizarImagem(char *argv[]) {
   FILE *in;
   FILE *out3;
-  in = fopen("lena.ascii.pgm", "rt");
   out3 = fopen("out3.ascii.pgm", "wt");
   if (in == NULL || out3 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
-    return 1;
   }
 
   char line[512];
@@ -112,16 +147,13 @@ void binarizarImagem() {
   fclose(out3);
 }
 
-// funcao que faz uma rotacao simples trocando as linhas pelas colunas e
-// vice-versa (rotacao de 90 graus)
-void rotacionarImagem() {
+// funcao que faz uma rotacao simples trocando as linhas pelas colunas e vice-versa (rotacao de 90 graus)
+void rotacionarImagem(char *argv[]) {
   FILE *in;
   FILE *out4;
-  in = fopen("lena.ascii.pgm", "rt");
   out4 = fopen("out4.ascii.pgm", "wt");
   if (in == NULL || out4 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
-    return 1;
   }
 
   char line[512];
@@ -134,7 +166,6 @@ void rotacionarImagem() {
 
   int i, j;
   int matriz[imagem.linha][imagem.coluna];
-  
 
   for (i = 0; i < imagem.linha; i++) {
     for (j = 0; j < imagem.coluna; j++) {
@@ -159,13 +190,13 @@ int main(int argc, char *argv[]) {
   FILE *in;
 
   // lendo a imagem de entrada
-  in = fopen("lena.ascii.pgm", "rt");
+  in = fopen(argv[1], "rt");
   if (in == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
     return 1;
   }
 
-  // criando as imagens de saida
+  // preenchendo a struct
 
   char line[512];
   fscanf(in, "%[^\n]\n", line);
@@ -179,11 +210,12 @@ int main(int argc, char *argv[]) {
   fscanf(in, "%d", &max);
   imagem.max = max;
 
-  clarearImagem();
-  binarizarImagem();
-  rotacionarImagem();
+  clarearImagem(char *argv[]);
+  zoomImagem(char *argv[]);
+  binarizarImagem(char *argv[]);
+  rotacionarImagem(char *argv[]);
 
   printf("Imagens foram geradas!");
-  
+
   return 0;
 }

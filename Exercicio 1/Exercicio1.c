@@ -1,5 +1,5 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
@@ -34,8 +34,10 @@ void admitirFuncionario(int *j) {
     exit(1);
   }
 
-  int i, a = *j;
-
+  int i;
+  if(*j==20){
+    printf("numero maximo\n");}
+  else{
   printf("Digite o nome do funcionario: ");
   scanf("%s", funcionario[*j].nome);
   printf("Digite o numero de registro do funcionario: ");
@@ -53,20 +55,25 @@ void admitirFuncionario(int *j) {
   scanf("%d", &funcionario[*j].departamento);
   funcionario[*j].proximo = -1;
   // mudar o proximo do ultimo funcionario do departamento
+
   for (i = 0; i < *j; i++) {
     if (funcionario[i].departamento == funcionario[*j].departamento &&
         funcionario[i].proximo == -1) {
       funcionario[i].proximo = *j;
     }
   }
+    
+  // limitar o numero de funcionarios que podem ser  admitidos para o max
 
-  fprintf(arq1, "%s %d %d %d %d\n", funcionario[*j].nome,
-          funcionario[*j].numRegistro, funcionario[*j].nivelSalarial,
-          funcionario[*j].departamento, funcionario[*j].proximo);
+    fprintf(arq1, "\n%s %d %d %d %d", funcionario[*j].nome,
+                funcionario[*j].numRegistro, funcionario[*j].nivelSalarial,
+                funcionario[*j].departamento, funcionario[*j].proximo);
+  }
+   
+    
+ 
 
-  a++;
-  *j = a;
-
+  sleep(2);
   system("clear");
 
   fclose(arq1);
@@ -151,7 +158,7 @@ void consultarDepartamento(int *j) {
 // funcao que demite um funcionario
 void demitirFuncionario(int *j) {
   FILE *arq1;
-  arq1 = fopen("funcionarios.dat", "r");
+  arq1 = fopen("funcionarios.dat", "a+");
   if (arq1 == NULL) {
     printf("Erro ao abrir o arquivo");
     exit(1);
@@ -179,12 +186,11 @@ void demitirFuncionario(int *j) {
     }
   } while (q == 0);
 
-  // mudar os proximos do funcionario apos a demissao
+  // mudar os proximos do funcionario apos a demissao?
 
   // remover funcionario do arquivo
-  fprintf(arq1, "%s %d %d %d %d\n", funcionario[i].nome,
-          funcionario[i].numRegistro, funcionario[i].nivelSalarial,
-          funcionario[i].departamento, funcionario[i].proximo);
+  
+  
 
   printf("Funcionario %d demitido com sucesso!\n", numRegistro);
 
@@ -251,98 +257,19 @@ void mudarDepartamento(int *j) {
 
 int main() {
   FILE *arq1, *arq2;
-  arq1 = fopen("funcionarios.dat", "w+");
+  arq1 = fopen("funcionarios.dat", "a+");
   if (arq1 == NULL) {
     printf("Erro na abertura do arquivo");
     exit(1);
   }
-  int menu, j = 13;
-
-  // preenchendo os dados dos funcionarios
-  strcpy(funcionario[0].nome, "Joao");
-  funcionario[0].numRegistro = 123;
-  funcionario[0].nivelSalarial = 7;
-  funcionario[0].departamento = 1;
-  funcionario[0].proximo = 5;
-
-  strcpy(funcionario[1].nome, "Maria");
-  funcionario[1].numRegistro = 8765;
-  funcionario[1].nivelSalarial = 12;
-  funcionario[1].departamento = 1;
-  funcionario[1].proximo = -1;
-
-  strcpy(funcionario[2].nome, "Jose");
-  funcionario[2].numRegistro = 9210;
-  funcionario[2].nivelSalarial = 4;
-  funcionario[2].departamento = 2;
-  funcionario[2].proximo = -1;
-
-  strcpy(funcionario[3].nome, "Ana");
-  funcionario[3].numRegistro = 2628;
-  funcionario[3].nivelSalarial = 4;
-  funcionario[3].departamento = 3;
-  funcionario[3].proximo = 6;
-
-  strcpy(funcionario[4].nome, "Pedro");
-  funcionario[4].numRegistro = 5571;
-  funcionario[4].nivelSalarial = 8;
-  funcionario[4].departamento = 2;
-  funcionario[4].proximo = -1;
-
-  strcpy(funcionario[5].nome, "Paulo");
-  funcionario[5].numRegistro = 652;
-  funcionario[5].nivelSalarial = 1;
-  funcionario[5].departamento = 1;
-  funcionario[5].proximo = 9;
-
-  strcpy(funcionario[6].nome, "Julia");
-  funcionario[6].numRegistro = 7943;
-  funcionario[6].nivelSalarial = 1;
-  funcionario[6].departamento = 3;
-  funcionario[6].proximo = -1;
-
-  strcpy(funcionario[7].nome, "Marcos");
-  funcionario[7].numRegistro = 671;
-  funcionario[7].nivelSalarial = 5;
-  funcionario[7].departamento = 3;
-  funcionario[7].proximo = 12;
-
-  strcpy(funcionario[8].nome, "Carla");
-  funcionario[8].numRegistro = 1956;
-  funcionario[8].nivelSalarial = 11;
-  funcionario[8].departamento = 2;
-  funcionario[8].proximo = 11;
-
-  strcpy(funcionario[9].nome, "Ricardo");
-  funcionario[9].numRegistro = 398;
-  funcionario[9].nivelSalarial = 6;
-  funcionario[9].departamento = 1;
-  funcionario[9].proximo = 10;
-
-  strcpy(funcionario[10].nome, "Juliana");
-  funcionario[10].numRegistro = 3356;
-  funcionario[10].nivelSalarial = 3;
-  funcionario[10].departamento = 1;
-  funcionario[10].proximo = 1;
-
-  strcpy(funcionario[11].nome, "Leticia");
-  funcionario[11].numRegistro = 4050;
-  funcionario[11].nivelSalarial = 2;
-  funcionario[11].departamento = 2;
-  funcionario[11].proximo = 4;
-
-  strcpy(funcionario[12].nome, "Rafael");
-  funcionario[12].numRegistro = 2468;
-  funcionario[12].nivelSalarial = 9;
-  funcionario[12].departamento = 3;
-  funcionario[12].proximo = 3;
-
-  // escrevendo os dados no arquivo
-  int i;
-  for (i = 0; i < 13; i++) {
-    fprintf(arq1, "%s %d %d %d %d\n", funcionario[i].nome,
-            funcionario[i].numRegistro, funcionario[i].nivelSalarial,
-            funcionario[i].departamento, funcionario[i].proximo);
+int m=0;
+  // passando os dados do arquivo para o vetor
+  int i = 0;
+  while (!feof(arq1)) {
+    fscanf(arq1, "%s %d %d %d %d", funcionario[i].nome,
+           &funcionario[i].numRegistro, &funcionario[i].nivelSalarial,
+           &funcionario[i].departamento, &funcionario[i].proximo);
+    i++;
   }
 
   fclose(arq1);
@@ -353,37 +280,41 @@ int main() {
     exit(1);
   }
 
-  // preenchendo dados dos departamentos
-  departamento[0].codDepto = 1;
-  strcpy(departamento[0].nomeDepto, "Vendas");
-  departamento[0].inicio = 0;
-
-  departamento[1].codDepto = 2;
-  strcpy(departamento[1].nomeDepto, "Contabilidade");
-  departamento[1].inicio = 8;
-
-  departamento[2].codDepto = 3;
-  strcpy(departamento[2].nomeDepto, "Estoque");
-  departamento[2].inicio = 7;
-
-  departamento[3].codDepto = 4;
-  strcpy(departamento[3].nomeDepto, "Entrega");
-  departamento[3].inicio = 2;
-
-  // escrevendo os dados no arquivo
-  for (i = 0; i < 4; i++) {
-    fprintf(arq2, "%d %s %d\n", departamento[i].codDepto,
-            departamento[i].nomeDepto, departamento[i].inicio);
+  // passando os dados do arquivo para o vetor
+  int i1 = 0;
+  while (!feof(arq2)) {
+    fscanf(arq2, "%d %s %d", &departamento[i1].codDepto,
+           departamento[i1].nomeDepto, &departamento[i1].inicio);
+    i1++;
   }
 
   fclose(arq2);
 
+  
+  // printando a struct
+  for (i = 0; i < 20; i++) {
+    printf("%s %d %d %d %d\n", funcionario[i].nome, funcionario[i].numRegistro,
+           funcionario[i].nivelSalarial, funcionario[i].departamento,
+           funcionario[i].proximo);
+  }
+  int menu;
+
   do {
+    int j=0;
+  // conta a quantidade de casas preenchidas no vetor
+  for (i = 0; i < 20; i++) {
+    if (funcionario[i].nome[0] != '\0') {
+      j++;
+    }
+  }
+    printf("%d", j);
+
     printf(
         "Escolha uma opção!\n0. Sair\n1. Admissão de funcionário\n2. "
         "Demissão de funcionário\n3. Mudança de Departamento\n4. Consulta a "
         "todos funcionários de um departamento\n5. Consulta Individual\n--> ");
     scanf("%d", &menu);
+    
     switch (menu) {
     case 0:
       printf("Saindo...");
