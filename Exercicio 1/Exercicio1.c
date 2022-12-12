@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +15,7 @@ typedef struct {
   int nivelSalarial;
   int departamento;
   int proximo;
+  bool ativo;
 } Funcionario;
 Funcionario funcionario[20];
 
@@ -23,10 +25,10 @@ typedef struct Departamento {
   char nomeDepto[30];
   int inicio;
 } Departamento;
-Departamento departamento[4];
+Departamento departamento[5];
 
 // funcao que admite novo funcionario no arquivo
-void admitirFuncionario(int *j) {
+void admitirFuncionario(int *j, int *max) {
   FILE *arq1;
   arq1 = fopen("funcionarios.dat", "a+");
   if (arq1 == NULL) {
@@ -35,43 +37,42 @@ void admitirFuncionario(int *j) {
   }
 
   int i;
-  if(*j==20){
-    printf("numero maximo\n");}
-  else{
-  printf("Digite o nome do funcionario: ");
-  scanf("%s", funcionario[*j].nome);
-  printf("Digite o numero de registro do funcionario: ");
-  scanf("%d", &funcionario[*j].numRegistro);
-  // verificar se o numero do funcionario lena existe
-  for (i = 0; i < *j; i++) {
-    if (funcionario[*j].numRegistro == funcionario[i].numRegistro) {
-      printf("Numero de registro ja existente, digite outro numero: ");
-      scanf("%d", &funcionario[*j].numRegistro);
+  if (*j == *max) {
+    printf("numero maximo\n");
+  } else {
+    printf("Digite o nome do funcionario: ");
+    scanf("%s", funcionario[*j].nome);
+    printf("Digite o numero de registro do funcionario: ");
+    scanf("%d", &funcionario[*j].numRegistro);
+    // verificar se o numero do funcionario lena existe
+    for (i = 0; i < *j; i++) {
+      if (funcionario[*j].numRegistro == funcionario[i].numRegistro) {
+        printf("Numero de registro ja existente, digite outro numero: ");
+        scanf("%d", &funcionario[*j].numRegistro);
+      }
     }
-  }
-  printf("Digite o nivel salarial do funcionario: ");
-  scanf("%d", &funcionario[*j].nivelSalarial);
-  printf("Digite o departamento do funcionario: ");
-  scanf("%d", &funcionario[*j].departamento);
-  funcionario[*j].proximo = -1;
-  // mudar o proximo do ultimo funcionario do departamento
+    printf("Digite o nivel salarial do funcionario: ");
+    scanf("%d", &funcionario[*j].nivelSalarial);
+    printf("Digite o departamento do funcionario: ");
+    scanf("%d", &funcionario[*j].departamento);
+    funcionario[*j].proximo = -1;
+    funcionario[*j].ativo = 1;
+    // mudar o proximo do ultimo funcionario do departamento
 
-  for (i = 0; i < *j; i++) {
-    if (funcionario[i].departamento == funcionario[*j].departamento &&
-        funcionario[i].proximo == -1) {
-      funcionario[i].proximo = *j;
+    for (i = 0; i < *j; i++) {
+      if (funcionario[i].departamento == funcionario[*j].departamento &&
+          funcionario[i].proximo == -1) {
+        funcionario[i].proximo = *j;
+      }
     }
-  }
-    
-  // limitar o numero de funcionarios que podem ser  admitidos para o max
 
-    fprintf(arq1, "\n%s %d %d %d %d", funcionario[*j].nome,
-                funcionario[*j].numRegistro, funcionario[*j].nivelSalarial,
-                funcionario[*j].departamento, funcionario[*j].proximo);
+    // limitar o numero de funcionarios que podem ser  admitidos para o max
+
+    fprintf(arq1, "\n%s %d %d %d %d %d", funcionario[*j].nome,
+            funcionario[*j].numRegistro, funcionario[*j].nivelSalarial,
+            funcionario[*j].departamento, funcionario[*j].proximo,
+            funcionario[*j].ativo);
   }
-   
-    
- 
 
   sleep(2);
   system("clear");
@@ -156,7 +157,7 @@ void consultarDepartamento(int *j) {
 }
 
 // funcao que demite um funcionario
-void demitirFuncionario(int *j) {
+void demitirFuncionario(int *j, int *max) {
   FILE *arq1;
   arq1 = fopen("funcionarios.dat", "a+");
   if (arq1 == NULL) {
@@ -189,8 +190,6 @@ void demitirFuncionario(int *j) {
   // mudar os proximos do funcionario apos a demissao?
 
   // remover funcionario do arquivo
-  
-  
 
   printf("Funcionario %d demitido com sucesso!\n", numRegistro);
 
@@ -211,7 +210,7 @@ void mudarDepartamento(int *j) {
     printf("Erro ao abrir o arquivo");
     exit(1);
   }
-  arq2 = fopen("departamentos.dat", "w");
+  arq2 = fopen("departamentos.dat", "a+");
   if (arq2 == NULL) {
     printf("Erro ao abrir o arquivo");
     exit(1);
@@ -262,19 +261,20 @@ int main() {
     printf("Erro na abertura do arquivo");
     exit(1);
   }
-int m=0;
+  
   // passando os dados do arquivo para o vetor
   int i = 0;
   while (!feof(arq1)) {
-    fscanf(arq1, "%s %d %d %d %d", funcionario[i].nome,
+    fscanf(arq1, "%s %d %d %d %d %d", funcionario[i].nome,
            &funcionario[i].numRegistro, &funcionario[i].nivelSalarial,
-           &funcionario[i].departamento, &funcionario[i].proximo);
+           &funcionario[i].departamento, &funcionario[i].proximo,
+           &funcionario[i].ativo);
     i++;
   }
 
   fclose(arq1);
 
-  arq2 = fopen("departamentos.dat", "w+");
+  arq2 = fopen("departamentos.dat", "a+");
   if (arq2 == NULL) {
     printf("Erro ao abrir o arquivo");
     exit(1);
@@ -290,7 +290,6 @@ int m=0;
 
   fclose(arq2);
 
-  
   // printando a struct
   for (i = 0; i < 20; i++) {
     printf("%s %d %d %d %d\n", funcionario[i].nome, funcionario[i].numRegistro,
@@ -299,14 +298,16 @@ int m=0;
   }
   int menu;
 
+  int max = 20;
+
   do {
-    int j=0;
-  // conta a quantidade de casas preenchidas no vetor
-  for (i = 0; i < 20; i++) {
-    if (funcionario[i].nome[0] != '\0') {
-      j++;
+    int j = 0;
+    // conta a quantidade de casas preenchidas no vetor
+    for (i = 0; i < 20; i++) {
+      if (funcionario[i].nome[0] != '\0') {
+        j++;
+      }
     }
-  }
     printf("%d", j);
 
     printf(
@@ -314,16 +315,16 @@ int m=0;
         "Demissão de funcionário\n3. Mudança de Departamento\n4. Consulta a "
         "todos funcionários de um departamento\n5. Consulta Individual\n--> ");
     scanf("%d", &menu);
-    
+
     switch (menu) {
     case 0:
       printf("Saindo...");
       break;
     case 1:
-      admitirFuncionario(&j);
+      admitirFuncionario(&j, &max);
       break;
     case 2:
-      demitirFuncionario(&j);
+      demitirFuncionario(&j, &max);
       break;
     case 3:
       mudarDepartamento(&j);

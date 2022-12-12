@@ -12,9 +12,10 @@ typedef struct {
 Imagem imagem;
 
 // funcao que clareia a imagem
-void clarearImagem(char *argv[]) {
+void clarearImagem(char *imagemEntrada) {
   FILE *in;
   FILE *out1;
+  in = fopen(imagemEntrada, "rt");
   out1 = fopen("out1.ascii.pgm", "wt");
   if (in == NULL || out1 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
@@ -47,10 +48,12 @@ void clarearImagem(char *argv[]) {
   fclose(out1);
 }
 
-// funcao que reduz o tamanho da imagem em blocos de 2x2 pixels e faz a media dos pixels para gerar um novo pixel na imagem de saida (zoom) ??
-void zoomImagem(char *argv[]) {
+// funcao que reduz o tamanho da imagem em blocos de 2x2 pixels e faz a media
+// dos pixels para gerar um novo pixel na imagem de saida (zoom) ??
+void zoomImagem(char *imagemEntrada) {
   FILE *in;
   FILE *out2;
+  in = fopen(imagemEntrada, "rt");
   out2 = fopen("out2.ascii.pgm", "wt");
   if (in == NULL || out2 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
@@ -90,10 +93,12 @@ void zoomImagem(char *argv[]) {
   fclose(out2);
 }
 
-// funcao que binariza a imagem transforma em preto ou branco a partir de um limiar obtido pela media dos pixels da imagem
-void binarizarImagem(char *argv[]) {
+// funcao que binariza a imagem transforma em preto ou branco a partir de um
+// limiar obtido pela media dos pixels da imagem
+void binarizarImagem(char *imagemEntrada) {
   FILE *in;
   FILE *out3;
+  in = fopen(imagemEntrada, "rt");
   out3 = fopen("out3.ascii.pgm", "wt");
   if (in == NULL || out3 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
@@ -147,10 +152,12 @@ void binarizarImagem(char *argv[]) {
   fclose(out3);
 }
 
-// funcao que faz uma rotacao simples trocando as linhas pelas colunas e vice-versa (rotacao de 90 graus)
-void rotacionarImagem(char *argv[]) {
+// funcao que faz uma rotacao simples trocando as linhas pelas colunas e
+// vice-versa (rotacao de 90 graus)
+void rotacionarImagem(char *imagemEntrada) {
   FILE *in;
   FILE *out4;
+  in = fopen(imagemEntrada, "rt");
   out4 = fopen("out4.ascii.pgm", "wt");
   if (in == NULL || out4 == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
@@ -190,7 +197,9 @@ int main(int argc, char *argv[]) {
   FILE *in;
 
   // lendo a imagem de entrada
-  in = fopen(argv[1], "rt");
+  char *imagemEntrada;
+  imagemEntrada = argv[1];
+  in = fopen(imagemEntrada, "rt");
   if (in == NULL) {
     printf("Erro ao abrir o arquivo de entrada");
     return 1;
@@ -210,10 +219,10 @@ int main(int argc, char *argv[]) {
   fscanf(in, "%d", &max);
   imagem.max = max;
 
-  clarearImagem(char *argv[]);
-  zoomImagem(char *argv[]);
-  binarizarImagem(char *argv[]);
-  rotacionarImagem(char *argv[]);
+  clarearImagem(&*imagemEntrada);
+  zoomImagem(&*imagemEntrada);
+  binarizarImagem(&*imagemEntrada);
+  rotacionarImagem(&*imagemEntrada);
 
   printf("Imagens foram geradas!");
 
