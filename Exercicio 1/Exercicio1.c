@@ -55,6 +55,11 @@ void admitirFuncionario(int *j, int *numAtivos) {
     scanf("%d", &funcionario[*j].nivelSalarial);
     printf("Digite o departamento do funcionario: ");
     scanf("%d", &funcionario[*j].departamento);
+    if(funcionario[*j].departamento>5){
+      printf("Só existem departamentos de 1 a 5\n");
+      printf("Digite outro departamento para o funcionario: ");
+      scanf("%d", &funcionario[*j].departamento);
+    }
     funcionario[*j].ativo = 1;
     
     
@@ -111,16 +116,19 @@ void consultarFuncionario(int *j) {
   // verificar se o numero do registro existe no arquivo
   do {
     for (i = 0; i < *j; i++) {
-      if (numRegistro == funcionario[i].numRegistro) {
+      if (numRegistro == funcionario[i].numRegistro && funcionario[i].ativo!=0) {
         printf("-=-=-=-=-=-=-=-\nNome: %s\nNumero de registro: %d\nNivel "
                "salarial: "
                "%d\nDepartamento: %d\nProximo: %d\n",
                funcionario[i].nome, funcionario[i].numRegistro,
                funcionario[i].nivelSalarial, funcionario[i].departamento,
                funcionario[i].proximo);
-        q++;
+        q++;}
+      else if(numRegistro == funcionario[i].numRegistro && funcionario[i].ativo==0){
+        printf("Esse funcionário foi demitido\n");
       }
-    }
+      }
+    
     if (q == 0) {
       printf("Numero de registro nao encontrado, digite outro numero: ");
       scanf("%d", &numRegistro);
@@ -157,6 +165,7 @@ void consultarDepartamento(int *j) {
                funcionario[i].nivelSalarial, funcionario[i].departamento,
                funcionario[i].proximo);
         q++;
+        
       }
     }
     if (q == 0) {
@@ -165,7 +174,7 @@ void consultarDepartamento(int *j) {
     }
   } while (q == 0);
 
-  sleep(20);
+  sleep(2);
   system("clear");
 
   fclose(arq1);
@@ -174,14 +183,15 @@ void consultarDepartamento(int *j) {
 
 // funcao que demite um funcionario
 void demitirFuncionario(int *j) {
-  FILE *arq1;
+  FILE *arq1, *arq2;
   arq1 = fopen("funcionarios.dat", "r + w");
+  arq2 = fopen("departamentos.dat", "r + w");
   if (arq1 == NULL) {
     printf("Erro ao abrir o arquivo");
     exit(1);
   }
 
-  int i, q = 0, numReg;
+  int i, idep=0, q = 0, numReg;
 
   printf("Digite o numero de registro do funcionario a ser demitido: ");
   scanf("%d", &numReg);
@@ -190,6 +200,7 @@ void demitirFuncionario(int *j) {
     for (i = 0; i < *j; i++) {
       if (numReg == funcionario[i].numRegistro) {
         funcionario[i].ativo = 0;
+        funcionario[i].departamento = 0;
         q++;
       }
     }
@@ -198,6 +209,7 @@ void demitirFuncionario(int *j) {
       scanf("%d", &numReg);
     }
   } while (q == 0);
+  
 
   // criar um novo arquivo com os dados atualizados do funcionario demitido e o antigo arquivo sera apagado e o novo arquivo sera renomeado para o nome do antigo arquivo
   FILE *arqtemp;
@@ -207,16 +219,46 @@ void demitirFuncionario(int *j) {
     exit(1);
   }
 
+  FILE *arqdep;
+  arqdep = fopen("departamentos2.dat", "w");
+  if (arqdep == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
+  
+  for (i = 0; i < *j; i++)
+    if(funcionario[i].ativo == 0 && departamento[i].inicio == i){
+      departamento[i].inicio = funcionario[i].proximo;
+      }
+
+    
+    for (i = 0; i < *j; i++) {
+      if(funcionario[funcionario[i].proximo].ativo==0 && funcionario[funcionario[i].proximo].departamento == funcionario[i].departamento){
+        funcionario[i].proximo = funcionario[funcionario[i].proximo].proximo;}}
+        
+
   for (i = 0; i < *j; i++) {
-    fprintf(arqtemp, "%s %d %d %d %d %d\n", funcionario[i].nome,
+      if(funcionario[i].ativo!=0)
+        fprintf(arqtemp, "%s %d %d %d %d %d\n", funcionario[i].nome,
             funcionario[i].numRegistro, funcionario[i].nivelSalarial,
             funcionario[i].departamento, funcionario[i].proximo,
             funcionario[i].ativo);
   }
 
+  for (i = 0; i <5; i++){
+      fprintf(arqdep, "%d %s %d\n", departamento[i].codDepto, departamento[i].nomeDepto, departamento[i].inicio);
+    }
+  
+
+
+
   fclose(arqtemp);
+  fclose(arqdep);
   remove("funcionarios.dat");
   rename("funcionarios2.dat", "funcionarios.dat");
+  
+  remove("departamentos.dat");
+  rename("departamentos2.dat", "departamentos.dat");
   
   printf("Funcionario demitido com sucesso!\n");
 
@@ -226,6 +268,7 @@ void demitirFuncionario(int *j) {
   system("clear");
 
   fclose(arq1);
+  fclose(arq2);
 }
 
 // funcao que faz mudanca de departamento de um funcionario
@@ -242,14 +285,14 @@ void mudarDepartamento(int *j) {
     exit(1);
   }
 
-  int i, q = 0, numRegistro, dep;
+  int i, q = 0, n, numRegistro, dep;
 
   printf("Digite o numero de registro do funcionario: ");
   scanf("%d", &numRegistro);
   // verificar se o numero do registro existe no arquivo
   do {
     for (i = 0; i < *j; i++) {
-      if (numRegistro == funcionario[i].numRegistro) {
+      if (numRegistro == funcionario[i].numRegistro && funcionario[i].ativo!= 0) {
         printf("Digite o novo departamento: ");
         scanf("%d", &dep);
         // verificar se o funcionario é o início de seu departamento
@@ -257,6 +300,8 @@ void mudarDepartamento(int *j) {
           departamento[i].inicio = funcionario[i].proximo;
         }
         funcionario[i].departamento = dep;
+        funcionario[i].proximo = -1;
+        n = i;
         q++;
       }
     }
@@ -267,11 +312,53 @@ void mudarDepartamento(int *j) {
   } while (q == 0);
 
   // mudar os proximos do funcionario apos a mudanca de departamento ?????
+  for(i = 0; i < *j; i++){
+    if(funcionario[i].proximo == -1 && funcionario[i].departamento == funcionario[n].departamento && i!=n)
+      funcionario[i].proximo = n;
+    
+  }
+  
 
   // adicionando no arquivo
-  fprintf(arq1, "%d", funcionario[i].departamento);
-  fprintf(arq2, "%d", departamento[i].inicio);
+FILE *arqtemp;
+  arqtemp = fopen("funcionarios2.dat", "w");
+  if (arqtemp == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
 
+  FILE *arqdep;
+  arqdep = fopen("departamentos2.dat", "w");
+  if (arqdep == NULL) {
+    printf("Erro ao abrir o arquivo");
+    exit(1);
+  }
+
+
+        
+
+  for (i = 0; i < *j; i++) {
+      if(funcionario[i].ativo!=0)
+        fprintf(arqtemp, "%s %d %d %d %d %d\n", funcionario[i].nome,
+            funcionario[i].numRegistro, funcionario[i].nivelSalarial,
+            funcionario[i].departamento, funcionario[i].proximo,
+            funcionario[i].ativo);
+  }
+
+for (i = 0; i <5; i++){
+      fprintf(arqdep, "%d %s %d\n", departamento[i].codDepto, departamento[i].nomeDepto, departamento[i].inicio);
+    }
+
+  
+fclose(arqtemp);
+  fclose(arqdep);
+  remove("funcionarios.dat");
+  rename("funcionarios2.dat", "funcionarios.dat");
+  
+  remove("departamentos.dat");
+  rename("departamentos2.dat", "departamentos.dat");
+  
+  
   printf("Funcionario %d mudou de departamento com sucesso!\n", numRegistro);
   sleep(5);
   system("clear");
@@ -322,17 +409,6 @@ int main() {
 
 
   do {
-    // printando a struct
-    printf("Nome|Num|Nsal|Dep|Prox|Ativo\n");
-    for (i = 0; i < 40; i++) {
-      if (funcionario[i].nome[0] != '\0') {
-      printf("%s %d %d %d %d %d\n", funcionario[i].nome,
-             funcionario[i].numRegistro, funcionario[i].nivelSalarial,
-             funcionario[i].departamento, funcionario[i].proximo,
-             funcionario[i].ativo);
-        }
-    }
-    //int max = 20;
     int j = 0;
     // conta a quantidade de casas preenchidas no vetor
     for (i = 0; i < 40; i++) {
@@ -349,7 +425,7 @@ int main() {
     printf("%d funcionários ativos!\n", numAtivos);
 
     printf(
-        "\n\nEscolha uma opção!\n0. Sair\n1. Admissão de funcionário\n2. "
+        "\nEscolha uma opção!\n0. Sair\n1. Admissão de funcionário\n2. "
         "Demissão de funcionário\n3. Mudança de Departamento\n4. Consulta a "
         "todos funcionários de um departamento\n5. Consulta Individual\n--> ");
     scanf("%d", &menu);
